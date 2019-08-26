@@ -2,7 +2,7 @@
   <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" :router="true" >
     <el-menu-item>
       <div class="logotype">
-        <img src="../assets/logo.png">
+        <img src="@/assert/logo.png">
         <span>
           <span>qq</span>Maker
         </span>

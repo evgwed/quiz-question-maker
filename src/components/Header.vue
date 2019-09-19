@@ -16,17 +16,13 @@
       <i class="el-icon-bangzhu"></i>
       About
     </el-menu-item>
-    <el-menu-item index="3">
-      <a href="https://xeurun.github.io/quiz-client/" target="_blank" class="quiz_client_link">
-        <i class="el-icon-pear"></i>
-        Quiz Client
-      </a>
+    <el-menu-item index="4" :route="{name: 'mocky'}" class="mokery_link">
+      <i class="el-icon-guide"></i>
+      Mocky.io
     </el-menu-item>
-    <el-menu-item index="4">
-      <a href="https://www.mocky.io/" target="_blank" class="mokery_link">
-        <i class="el-icon-guide"></i>
-        Mocky.io
-      </a>
+    <el-menu-item index="3" :route="{name: 'quiz-client'}" class="quiz_client_link">
+      <i class="el-icon-pear"></i>
+      Quiz Client
     </el-menu-item>
   </el-menu>
 </template>

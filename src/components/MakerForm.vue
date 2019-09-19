@@ -2,7 +2,7 @@
     <div>
         <el-row :gutter="20">
             <el-col :span="16">
-                <el-form ref="form" :model="form" label-width="120px">
+                <el-form ref="makerForm" :model="form" :rules="rules" label-width="120px">
                     <el-form-item label="Question">
                         <el-input v-model="form.text" type="textarea" :rows="10"></el-input>
                     </el-form-item>
@@ -18,22 +18,36 @@
                         </div>
                     </el-form-item>
                     <el-form-item label="Tags">
-                        <el-select
-                                v-model="form.tags"
-                                multiple
-                                filterable
-                                allow-create
-                                default-first-option
-                                placeholder="Choose tags"
-                                class="tags-select"
-                        >
-                            <el-option
-                                    v-for="item in tagsOptions"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value">
-                            </el-option>
-                        </el-select>
+
+                        <el-row :gutter="20">
+                            <el-col :span="6">
+                                <span :class="['theme-text symfony', (this.showLaravelTags ? '':'active')]">Symfony</span>
+                                <el-switch
+                                        v-model="showLaravelTags"
+                                        active-color="#ff2d20"
+                                        inactive-color="#000">
+                                </el-switch>
+                                <span :class="['theme-text laravel', (this.showLaravelTags ? 'active':'')]">Laravel</span>
+                            </el-col>
+                            <el-col :span="16">
+                                <el-select
+                                        v-model="form.tags"
+                                        multiple
+                                        filterable
+                                        allow-create
+                                        default-first-option
+                                        placeholder="Choose tags"
+                                        class="tags-select"
+                                >
+                                    <el-option
+                                            v-for="item in optionsTags"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </el-col>
+                        </el-row>
                     </el-form-item>
                     <el-form-item label="Hint">
                         <el-input v-model="form.hint" type="textarea" :rows="3"></el-input>
@@ -49,14 +63,15 @@
                     <pre id="code_json">{{question}}</pre>
                 </div>
                 <el-divider>Actions</el-divider>
-                <el-button type="success" icon="el-icon-copy-document" round class="btn" :data-clipboard-text="questionJson" >Copy JSON to clipboard</el-button>
+                <el-button type="success" icon="el-icon-copy-document" class="btn" round :data-clipboard-text="questionJson" @click="submitForm('makerForm')" >Copy JSON to clipboard</el-button>
             </el-col>
         </el-row>
     </div>
 </template>
 
 <script>
-    import tagsOptions from '../data/tags';
+    import tagsOptionsLaravel from '../data/tags_laravel';
+    import tagsOptionsSymfony from '../data/tags_symfony';
     import Answer from './MakerAnswer'
     import ClipboardJS from 'clipboard'
 
@@ -92,7 +107,21 @@
                         }
                     ],
                 },
-                tagsOptions: tagsOptions
+                rules: {
+                    text: [
+                        { required: true, message: 'Please input Activity name', trigger: 'blur' },
+                        { min: 3, max: 5, message: 'Length should be 3 to 5', trigger: 'blur' }
+                    ],
+                    tags: [
+                        { type: 'array', required: true}
+                    ],
+                    hint: [
+                        { required: true, message: 'Please input Activity name', trigger: 'blur' },
+                        { min: 1, max: 5, message: 'Length should be 3 to 5', trigger: 'blur' }
+                    ]
+                },
+                tagsOptions: tagsOptionsLaravel,
+                showLaravelTags: true,
             }
         },
         computed: {
@@ -113,11 +142,15 @@
             },
             questionJson: function () {
                 return this.question && document.getElementById('code_json') ? document.getElementById('code_json').innerText : '';
+            },
+            optionsTags: function () {
+                return this.showLaravelTags ? tagsOptionsLaravel : tagsOptionsSymfony;
             }
         },
         methods: {
             changeVariant(id, text, isCorrect) {
-                this.form.variants = this.form.variants.map(function (oldItem) {
+                let form = this.form;
+                form.variants = form.variants.map(function (oldItem) {
                     if (oldItem.id === id) {
                         return {
                             id: id,
@@ -126,15 +159,27 @@
                         };
                     }
                     return oldItem;
-                })
+                });
+                this.form = form;
+            },
+            submitForm(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        var clipboard = new ClipboardJS('.btn');
+                        this.$message({
+                            message: 'Данные успешно скопированы в буфер обмена.',
+                            type: 'success'
+                        });
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
             }
         },
         components: {
             Answer
         },
-        mounted: function() {
-            var clipboard = new ClipboardJS('.btn');
-        }
     }
 </script>
 
@@ -148,5 +193,25 @@
         background: #f5f5f5;
         overflow: auto;
         padding: 10px 15px;
+    }
+    .theme-text {
+        display: inline-block;
+        color: #aaa;
+    }
+    .theme-text.laravel{
+        padding-left: 10px;
+        width: 60px;
+    }
+    .theme-text.laravel.active{
+        font-weight: bold;
+        color: #ff2d20;
+    }
+    .theme-text.symfony{
+        padding-right: 10px;
+        width: 60px;
+    }
+    .theme-text.symfony.active{
+        font-weight: bold;
+        color: #000;
     }
 </style>

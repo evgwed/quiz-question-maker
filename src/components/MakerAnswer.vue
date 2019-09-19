@@ -9,6 +9,7 @@
                         size="small"
                         class="answer_text"
                         @change="change"
+                        @blur="change"
                 ></el-input>
             </el-col>
             <el-col :span="6">
@@ -16,6 +17,7 @@
                         v-model="isCorrect"
                         size="small"
                         @change="change"
+                        @blur="change"
                 >
                     <el-radio-button :label="true">Correct</el-radio-button>
                     <el-radio-button :label="false">InCorrect</el-radio-button>

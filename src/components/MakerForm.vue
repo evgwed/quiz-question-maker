@@ -63,7 +63,7 @@
                     <pre id="code_json">{{question}}</pre>
                 </div>
                 <el-divider>Actions</el-divider>
-                <el-button type="success" icon="el-icon-copy-document" class="btn" round :data-clipboard-text="questionJson" @click="submitForm('makerForm')" >Copy JSON to clipboard</el-button>
+                <el-button type="success" icon="el-icon-copy-document" class="btn" round @click="submitForm('makerForm')" >Copy JSON to clipboard</el-button>
             </el-col>
         </el-row>
     </div>
@@ -73,7 +73,6 @@
     import tagsOptionsLaravel from '../data/tags_laravel';
     import tagsOptionsSymfony from '../data/tags_symfony';
     import Answer from './MakerAnswer'
-    import ClipboardJS from 'clipboard'
 
     export default {
         name: "MakerForm",
@@ -140,9 +139,6 @@
                     hintUrl: this.form.hintUrl
                 }
             },
-            questionJson: function () {
-                return this.question && document.getElementById('code_json') ? document.getElementById('code_json').innerText : '';
-            },
             optionsTags: function () {
                 return this.showLaravelTags ? tagsOptionsLaravel : tagsOptionsSymfony;
             }
@@ -165,13 +161,16 @@
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        var clipboard = new ClipboardJS('.btn');
+                        this.$clipboard(document.getElementById('code_json').innerText);
                         this.$message({
                             message: 'Данные успешно скопированы в буфер обмена.',
                             type: 'success'
                         });
                     } else {
-                        console.log('error submit!!');
+                        this.$message({
+                            message: 'Fail copy.',
+                            type: 'error'
+                        });
                         return false;
                     }
                 });
